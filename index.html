@@ -267,6 +267,10 @@ function init() {
   $("#q2").addEventListener("input", renderDVList);
   ["mink", "cap"].forEach(id => $("#" + id).addEventListener("input", () => { $("#" + id + "v").textContent = $("#" + id).value; draw(); }));
   window.addEventListener("hashchange", route);
+  // refit maps whenever their panel changes size (iframe embeds, narrow screens, view switches)
+  if (window.ResizeObserver) [[cy, "#cy"], [cy2, "#cy2"]].forEach(([c, sel]) => {
+    let to; new ResizeObserver(() => { clearTimeout(to); to = setTimeout(() => { c.resize(); if (c.elements().length) c.fit(undefined, 60); }, 80); }).observe($(sel));
+  });
   const redraw = () => { if (view === "atlas") draw(); if (view === "model" && mfocus) buildModel(); if (view === "gaps") renderGaps(); };
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redraw);
   new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
